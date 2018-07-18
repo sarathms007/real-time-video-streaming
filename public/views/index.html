@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<style>
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: scroll !important;
+    width: 100%;
+  }
+</style>
+
+<head>
+  <title>Video Uploader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+
+  <script type="text/Javascript" src="../js/video.min.js"></script>
+  <script type="text/Javascript" src="../js/RecordRTC.js"></script>
+  <script type="text/Javascript" src="../js/adapter-latest.js"></script>
+  <script type="text/Javascript" src="../js/videojs.record.recorderjs.js"></script>
+  <script type="text/Javascript" src="../js/videojs.record.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css">
+  <link href="../dist/css/video-js.min.css" rel="stylesheet">
+  <link href="../dist/css/videojs.record.min.css" rel="stylesheet">
+
+
+
+  <!--Import Google Icon Font-->
+  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+
+  <link rel="stylesheet" type="text/css" href="/stylesheets/index.css">
+
+
+  <script>
+    window.HELP_IMPROVE_VIDEOJS = false;
+  </script>
+
+  <style>
+    /* change player background color */
+
+    #myVideo {
+      background-color: cornflowerblue;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="navbar-fixed">
+    <nav>
+      <div class="nav-wrapper">
+        <a href="http://silverpond.com.au/" class="brand-logo left" target="_blank">
+          <img width="200" height="50" class="logo-brand" src="../graphics/pond.png">
+        </a>
+      </div>
+    </nav>
+    <!-- end nav -->
+  </div>
+
+
+  <div class="container">
+
+    <div class="row">
+
+      <div class="col s12 m6">
+        <div class="uploadBox">
+          <h5>Image Uploader</h5>
+
+          <div class="first-content row">
+            <div class="file-field input-field">
+              <div class="btn attach-file">
+                <span>
+                  <i class="material-icons">attach_file</i>
+                </span>
+                <input id="fileBox" type="file" accept="images/*">
+              </div>
+              <div class="file-path-wrapper">
+                <input id="fileBoxLabel" class="file-path validate" type="text" placeholder="Upload your image">
+              </div>
+            </div>
+          </div>
+          <!-- end first-content -->
+          <div class="row">
+
+            <div class="input-field inline">
+              <i class="material-icons prefix">text_fields</i>
+              <input id="firstname" id="icon_prefix" type="text" class="validate">
+              <label for="icon_prefix">First Name </label>
+            </div>
+
+            <div class="input-field inline">
+              <i class="material-icons prefix">text_fields</i>
+              <input id="lastname" id="icon_prefix" type="text" class="validate">
+              <label for="icon_prefix">Last Name </label>
+            </div>
+
+            <div class="col s6">
+              <label>Gender</label>
+              <select id="gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+
+            <div class="col s6">
+              <label>Privacy Settings</label>
+              <select id="privacyStatus">
+                <option value="public">Unlisted</option>
+                <option value="private">Private</option>
+                <option value="public">Public</option>
+              </select>
+            </div>
+
+            <div class="input-field col s12">
+              <i class="material-icons prefix">text_fields</i>
+              <input id="email" id="icon_prefix" type="text" class="validate">
+              <label for="icon_prefix">Email </label>
+            </div>
+
+            <div class="input-field col s12">
+              <i class="material-icons prefix">text_fields</i>
+              <input id="mobile" id="icon_prefix" type="text" class="validate">
+              <label for="icon_prefix">Mobile </label>
+            </div>
+
+
+
+            <div class="col s6 upload-container">
+              <button class="btn waves-effect waves-light publish" id='uploadButton' type="submit" name="action">Upload
+                <i class="material-icons right">publish</i>
+              </button>
+            </div>
+
+          </div>
+          <!-- end row -->
+
+        </div>
+        <!-- end uploadBox -->
+      </div>
+      <!-- end col cols12 m6 -->
+
+      <div class="col s12 m6">
+
+        <div id="recentUploads">
+          <div class="first-content">
+            <h5>Videos Uploaded</h5>
+            <p id="empty">No videos uploaded yet</p>
+            <ul id="uploads" class="collection"></ul>
+          </div>
+          <input id="hid" type="hidden" value="err" name="hid">
+          <h5>Video Recorder</h5>
+          <video id="myVideo" class="video-js vjs-default-skin"></video>
+
+          <!--/***************************************************** * VIDEO RECORDER * ****************************************************/-->
+
+          <script>
+            var options = {
+              controls: true,
+              width: 320,
+              height: 240,
+              fluid: false,
+              controlBar: {
+                volumePanel: false
+              },
+              plugins: {
+                record: {
+                  audio: false,
+                  video: true,
+                  maxLength: 10,
+                  debug: true
+                }
+              }
+            };
+
+            // use correct video mimetype for opera
+            if (!!window.opera || navigator.userAgent.indexOf('OPR/') !== -1) {
+              options.plugins.record.videoMimeType = 'video/webm\;codecs=vp8'; // or vp9
+            }
+
+            var player = videojs("myVideo", options, function () {
+              // print version information at startup
+              videojs.log('Using video.js', videojs.VERSION,
+                'with videojs-record', videojs.getPluginVersion('record'),
+                'and recordrtc', RecordRTC.version);
+            });
+
+            // error handling
+            player.on('deviceError', function () {
+              console.warn('device error:', player.deviceErrorCode);
+            });
+
+            // user clicked the record button and started recording
+            player.on('startRecord', function () {
+              console.log('started recording!');
+            });
+
+            // user completed recording and stream is available
+            player.on('finishRecord', function () {
+              // the blob object contains the recorded data that
+              // can be downloaded by the user, stored on server etc.
+              var data = player.recordedData;
+
+              document.getElementById("hid").value = "sucess";
+
+              var serverUrl = '/upload';
+              var formData = new FormData();
+              formData.append('file', data, data.name);
+
+              console.log('uploading recording:', data.name);
+
+              fetch(serverUrl, {
+                method: 'POST',
+                body: formData
+              }).then(
+                success => console.log('recording upload complete.')
+              ).catch(
+                error => console.error('an upload error occurred!')
+              );
+            });
+
+          </script>
+
+          <!-- video recorder ends -->
+
+        </div>
+        <!-- end recentUploads -->
+        <div class="row">
+
+          <div class="input-field col s12">
+            <i class="material-icons prefix">text_fields</i>
+            <input id="title" id="icon_prefix" type="text" class="validate">
+            <label for="icon_prefix">Title </label>
+          </div>
+
+          <div class="input-field col s12">
+            <i class="material-icons prefix">mode_edit</i>
+            <textarea id="description" class="materialize-textarea validate"></textarea>
+            <label for="description">Description</label>
+          </div>
+
+
+
+        </div>
+        <!-- end row -->
+
+      </div>
+      <!-- end cols12 m6 -->
+
+    </div>
+    <!-- end row -->
+
+  </div>
+  <!-- end container -->
+
+  <footer class="page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col l6 s12">
+          <h5 class="white-text">Over 13 years we have developed big data and software solutions</h5>
+          <p class="grey-text text-lighten-4 mission">
+            <a href="http://silverpond.com.au">We are a team of data scientists, machine learning specialists and software engineers who design solutions to
+              hard problems. We love big data and turning blue-sky ideas into reality. human potential -></a>
+          </p>
+        </div>
+        <div class="col l4 offset-l2 s12">
+          <img width="150" src="../graphics/pond.png">
+          <ul>
+            <li>
+              <a class="grey-text text-lighten-3" href="http://silverpond.com.au/team">Team</a>
+            </li>
+            <li>
+              <a class="grey-text text-lighten-3" href="https://www.deeplearningworkshop.com.au/">Work Shops</a>
+            </li>
+            <li>
+              <a class="grey-text text-lighten-3" href="http://silverpond.com.au/community">Community</a>
+            </li>
+            <li>
+              <a class="grey-text text-lighten-3" href="http://silverpond.com.au/blog">Blog</a>
+            </li>
+            <p>
+              <a class="grey-text text-lighten-3" href="http://silverpond.com.au">
+                <img width="70" src="../graphics/cc.svg">
+              </a>
+            </p>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+        © 2018 Copyright
+        <img hspace="94%" height="50" width="50" src="../graphics/deakin.svg ">
+        <a class="grey-text text-lighten-4 right" href="http://www.deakin.edu.au/" target="_blank">Deakin Team</a>
+      </div>
+    </div>
+  </footer>
+  <!-- end footer -->
+
+  <!-- Javascript Imports -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
+  <script src="/js/index.js"></script>
+</body>
+
+</html>
